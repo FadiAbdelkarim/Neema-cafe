@@ -2,6 +2,12 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { randomUUID } from 'crypto'
+
+function safeFileName(originalName: string): string {
+  const ext = originalName.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg'
+  return `${Date.now()}-${randomUUID()}.${ext}`
+}
 
 export async function addEvent(formData: FormData) {
   const supabase = await createClient()
@@ -17,10 +23,14 @@ export async function addEvent(formData: FormData) {
   let image_url: string | null = null
 
   if (image && image.size > 0) {
-    const fileName = `events/${Date.now()}-${image.name}`
+    const fileName = `events/${safeFileName(image.name)}`
     const { error: uploadError } = await supabase.storage
       .from('images')
       .upload(fileName, image)
+
+    if (uploadError) {
+      console.error('EVENT IMAGE UPLOAD ERROR:', uploadError)
+    }
 
     if (!uploadError) {
       const { data: publicUrl } = supabase.storage.from('images').getPublicUrl(fileName)
@@ -63,10 +73,14 @@ export async function updateEvent(id: string, formData: FormData) {
   }
 
   if (image && image.size > 0) {
-    const fileName = `events/${Date.now()}-${image.name}`
+    const fileName = `events/${safeFileName(image.name)}`
     const { error: uploadError } = await supabase.storage
       .from('images')
       .upload(fileName, image)
+
+    if (uploadError) {
+      console.error('EVENT IMAGE UPLOAD ERROR:', uploadError)
+    }
 
     if (!uploadError) {
       const { data: publicUrl } = supabase.storage.from('images').getPublicUrl(fileName)

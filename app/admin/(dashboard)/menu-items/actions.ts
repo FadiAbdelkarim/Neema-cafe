@@ -2,6 +2,12 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { randomUUID } from 'crypto'
+
+function safeFileName(originalName: string): string {
+  const ext = originalName.split('.').pop()?.toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg'
+  return `${Date.now()}-${randomUUID()}.${ext}`
+}
 
 export async function addMenuItem(formData: FormData) {
   const supabase = await createClient()
@@ -17,7 +23,7 @@ export async function addMenuItem(formData: FormData) {
   let image_url: string | null = null
 
   if (image && image.size > 0) {
-    const fileName = `menu/${Date.now()}-${image.name}`
+    const fileName = `menu/${safeFileName(image.name)}`
     const { error: uploadError } = await supabase.storage
       .from('images')
       .upload(fileName, image)
@@ -68,7 +74,7 @@ export async function updateMenuItem(id: string, formData: FormData) {
   }
 
   if (image && image.size > 0) {
-    const fileName = `menu/${Date.now()}-${image.name}`
+    const fileName = `menu/${safeFileName(image.name)}`
     const { error: uploadError } = await supabase.storage
       .from('images')
       .upload(fileName, image)

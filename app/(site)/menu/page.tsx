@@ -1,14 +1,8 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import PatternDivider from "@/components/pattern-divider";
 import MenuItemFlipCard from "@/components/menu-item-flip-card";
 
-export default async function MenuPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string }>;
-}) {
-  const { category: activeCategory } = await searchParams;
+export default async function MenuPage() {
   const supabase = await createClient();
 
   const { data: categories } = await supabase
@@ -16,11 +10,18 @@ export default async function MenuPage({
     .select("*")
     .order("sort_order");
 
-  let query = supabase.from("menu_items").select("*").eq("is_available", true).order("sort_order");
-  if (activeCategory) {
-    query = query.eq("category_id", activeCategory);
-  }
-  const { data: items } = await query;
+  const { data: items } = await supabase
+    .from("menu_items")
+    .select("*")
+    .eq("is_available", true)
+    .order("sort_order");
+
+  const grouped = (categories ?? []).map((cat) => ({
+    category: cat,
+    items: (items ?? []).filter((item) => item.category_id === cat.id),
+  })).filter((group) => group.items.length > 0);
+
+  const uncategorized = (items ?? []).filter((item) => !item.category_id);
 
   return (
     <main className="min-h-screen pb-24">
@@ -49,53 +50,77 @@ export default async function MenuPage({
             alt="Neema Cafe"
             className="w-[clamp(160px,20vw,220px)] mx-auto"
           />
-          
+
           <div className="font-display text-2xl md:text-3xl text-gold/70 italic mt-4">Menu</div>
         </div>
       </div>
 
-      {/* Category filter buttons */}
-      <div className="bg-cream py-12 px-6 md:px-16">
-      <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-4">
-          <Link
-            href="/menu"
-            className={`rounded-full py-5 text-center font-display text-lg tracking-wide transition-colors ${
-              !activeCategory ? "bg-green-deep text-gold" : "bg-green-deep/90 text-gold/80 hover:bg-green-deep"
-            }`}
-          >
-            All
-          </Link>
-          {categories?.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/menu?category=${cat.id}`}
-              className={`rounded-full py-5 text-center font-display text-lg tracking-wide transition-colors ${
-                activeCategory === cat.id ? "bg-green-deep text-gold" : "bg-green-deep/90 text-gold/80 hover:bg-green-deep"
-              }`}
-            >
-              {cat.name}
-            </Link>
-          ))}
+      {grouped.length > 0 && (
+        <div className="bg-cream py-12 px-6 md:px-16">
+          <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-4">
+            {grouped.map((group) => (
+              <a
+                key={group.category.id}
+                href={`#category-${group.category.id}`}
+                className="rounded-full py-5 text-center font-display text-lg tracking-wide transition-colors bg-green-deep/90 text-gold/80 hover:bg-green-deep hover:text-gold"
+              >
+                {group.category.name}
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
       <PatternDivider />
 
-      {/* Item cards */}
-      <div className="bg-cream-deep py-14 px-6 md:px-16">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
-          {items?.map((item) => (
-            <MenuItemFlipCard key={item.id} item={item} />
-          ))}
-
-          {(!items || items.length === 0) && (
-            <p className="text-ink/50 col-span-2 text-center py-10">
-              No items in this category yet.
-            </p>
-          )}
+      {grouped.length === 0 && uncategorized.length === 0 && (
+        <div className="bg-cream-deep py-24 px-6 text-center">
+          <p className="text-ink/50">No items on the menu yet — check back soon.</p>
         </div>
-      </div>
-      
+      )}
+
+      {grouped.map((group, index) => (
+        <div key={group.category.id}>
+          {index > 0 && <PatternDivider />}
+          <section id={`category-${group.category.id}`} className="scroll-mt-24 bg-cream-deep py-14 px-6 md:px-16">
+            <div className="max-w-6xl mx-auto">
+              <div className="mb-8">
+                {group.category.name_ar && (
+                  <h2 dir="rtl" className="font-arabic text-right text-3xl text-ink mb-1">
+                    {group.category.name_ar}
+                  </h2>
+                )}
+                <h3 className="font-display text-2xl text-ink/70 italic">{group.category.name}</h3>
+              </div>
+
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-6 justify-items-center">
+                {group.items.map((item) => (
+                  <MenuItemFlipCard key={item.id} item={item} />
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      ))}
+
+      {uncategorized.length > 0 && (
+        <div>
+          {grouped.length > 0 && <PatternDivider />}
+          <section className="bg-cream-deep py-14 px-6 md:px-16">
+            <div className="max-w-6xl mx-auto">
+              <div className="mb-8">
+                <h3 className="font-display text-2xl text-ink/70 italic">Other</h3>
+              </div>
+
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-6 justify-items-center">
+                {uncategorized.map((item) => (
+                  <MenuItemFlipCard key={item.id} item={item} />
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
-    
   );
 }
