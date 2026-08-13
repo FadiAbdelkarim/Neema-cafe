@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
-import { addCategory, deleteCategory } from './actions'
+import { addCategory } from './actions'
+import CategoryRow from '@/components/admin/category-row'
 
 export default async function CategoriesPage() {
   const supabase = await createClient()
@@ -30,21 +31,9 @@ export default async function CategoriesPage() {
         {categories?.length === 0 && (
           <p className="p-6 text-ink/50 text-sm">No categories yet — add one above.</p>
         )}
-        {categories?.map((cat) => (
-          <div key={cat.id} className="flex items-center justify-between px-6 py-4">
-            <div>
-              <span className="text-ink">{cat.name}</span>
-              {cat.name_ar && (
-                <span dir="rtl" className="font-arabic text-ink/60 ml-3">{cat.name_ar}</span>
-              )}
-            </div>
-            <form action={deleteCategory.bind(null, cat.id)}>
-              <button type="submit" className="text-terracotta text-sm hover:underline">
-                Delete
-              </button>
-          </form>
-          </div>
-        ))}
+        {categories?.map((cat) => {
+          return <CategoryRow key={cat.id} category={cat} />
+        })}
       </div>
     </div>
   )

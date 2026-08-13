@@ -13,6 +13,7 @@ export default function Home() {
       <Gallery />
       <PatternDivider />
       <LocationSection />
+      
     </main>
   );
 }

@@ -23,7 +23,7 @@ export default async function MenuPage({
   const { data: items } = await query;
 
   return (
-    <main className="min-h-screen  pb-24">
+    <main className="min-h-screen pb-24">
       <div className="relative h-[60vh] min-h-[420px] flex items-center justify-center text-center overflow-hidden mb-4">
         <div
           className="absolute inset-0 bg-cover scale-110"
@@ -94,6 +94,8 @@ export default async function MenuPage({
           )}
         </div>
       </div>
+      
     </main>
+    
   );
 }

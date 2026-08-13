@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
-import { addEvent, deleteEvent } from './actions'
+import { addEvent } from './actions'
+import EventRow from '@/components/admin/event-row'
 
 export default async function EventsPage() {
   const supabase = await createClient()
@@ -57,30 +58,9 @@ export default async function EventsPage() {
         {events?.length === 0 && (
           <p className="p-6 text-ink/50 text-sm">No events yet — add one above.</p>
         )}
-        {events?.map((event) => (
-          <div key={event.id} className="flex items-center justify-between px-6 py-4 gap-4">
-            <div className="flex items-center gap-4 flex-1">
-            {event.image_url && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={event.image_url} alt={event.title} className="w-14 h-14 object-cover rounded-sm" />
-              )}
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-ink font-medium">{event.title}</span>
-                  {event.title_ar && <span dir="rtl" className="font-arabic text-ink/60">{event.title_ar}</span>}
-                </div>
-                <div className="text-ink/50 text-sm">
-                  {event.event_date}{event.event_time ? ` · ${event.event_time}` : ''}
-                </div>
-              </div>
-            </div>
-            <form action={deleteEvent.bind(null, event.id)}>
-              <button type="submit" className="text-terracotta text-sm hover:underline">
-                Delete
-              </button>
-            </form>
-          </div>
-        ))}
+        {events?.map((event) => {
+          return <EventRow key={event.id} event={event} />
+        })}
       </div>
     </div>
   )
