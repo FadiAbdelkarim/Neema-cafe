@@ -17,11 +17,16 @@ export default function Nav() {
 
   useEffect(() => {
     function onScroll() {
-      setScrolled(window.scrollY > 80);
+      const y = window.scrollY || document.documentElement.scrollTop || 0;
+      setScrolled(y > 80);
     }
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useEffect(() => {

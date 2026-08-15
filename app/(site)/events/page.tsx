@@ -59,7 +59,10 @@ export default async function EventsPage() {
           <h3 className="font-display text-ink/50 italic mb-10">Upcoming</h3>
 
           {(!upcoming || upcoming.length === 0) && (
-            <p className="text-ink/50">Nothing on the calendar yet — check back soon.</p>
+            <div className="text-center py-6">
+              <p dir="rtl" className="font-arabic text-ink/60 text-lg mb-1">لا توجد فعاليات قادمة حالياً — تابعونا قريباً.</p>
+              <p className="text-ink/40 text-sm">Nothing on the calendar yet — check back soon.</p>
+            </div>
           )}
 
           <div className="space-y-6">

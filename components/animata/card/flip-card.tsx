@@ -8,6 +8,7 @@ export type FlipCardRotate = "x" | "y";
 
 type FlipCardContextValue = {
   rotate: FlipCardRotate;
+  flipped: boolean;
 };
 
 const FlipCardContext = createContext<FlipCardContextValue | null>(null);
@@ -37,7 +38,7 @@ type FlipCardRootProps = ComponentProps<"div"> & {
 };
 
 function FlipCardRoot({ rotate = "y", flipped = false, className, children, ...props }: FlipCardRootProps) {
-  const value = useMemo(() => ({ rotate }), [rotate]);
+  const value = useMemo(() => ({ rotate, flipped }), [rotate, flipped]);
 
   return (
     <FlipCardContext.Provider value={value}>
@@ -58,17 +59,27 @@ function FlipCardRoot({ rotate = "y", flipped = false, className, children, ...p
 type FlipCardFaceProps = ComponentProps<"div">;
 
 function FlipCardFront({ className, ...props }: FlipCardFaceProps) {
-  useFlipCard();
-
-  return <div className={cn("absolute inset-0 backface-hidden", className)} {...props} />;
-}
-
-function FlipCardBack({ className, ...props }: FlipCardFaceProps) {
-  const { rotate } = useFlipCard();
+  const { flipped } = useFlipCard();
 
   return (
     <div
-      className={cn("absolute inset-0 backface-hidden", ROTATION_CLASS[rotate].back, className)}
+      className={cn("absolute inset-0 backface-hidden", flipped && "pointer-events-none", className)}
+      {...props}
+    />
+  );
+}
+
+function FlipCardBack({ className, ...props }: FlipCardFaceProps) {
+  const { rotate, flipped } = useFlipCard();
+
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 backface-hidden",
+        ROTATION_CLASS[rotate].back,
+        !flipped && "pointer-events-none",
+        className,
+      )}
       {...props}
     />
   );
@@ -94,4 +105,3 @@ export {
   FlipCardFront,
   FlipCardRoot,
 };
-
