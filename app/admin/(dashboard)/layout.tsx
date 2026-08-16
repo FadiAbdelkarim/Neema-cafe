@@ -13,19 +13,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-screen bg-cream">
-      <header className="bg-green-deep text-gold px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <span className="font-display text-lg">Neema Admin</span>
-          <nav className="flex gap-6 text-sm">
-            <Link href="/admin">Dashboard</Link>
-            <Link href="/admin/menu-items">Menu Items</Link>
-            <Link href="/admin/categories">Categories</Link>
-            <Link href="/admin/events">Events</Link>
-          </nav>
+      <header className="bg-green-deep text-gold">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 gap-3">
+          <span className="font-display text-base sm:text-lg shrink-0">Neema Admin</span>
+          <div className="shrink-0">
+            <LogoutButton />
+          </div>
         </div>
-        <LogoutButton />
+        <nav className="flex gap-5 sm:gap-6 text-sm px-4 sm:px-8 pb-3 sm:pb-4 overflow-x-auto whitespace-nowrap [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <Link href="/admin" className="shrink-0">Dashboard</Link>
+          <Link href="/admin/menu-items" className="shrink-0">Menu Items</Link>
+          <Link href="/admin/categories" className="shrink-0">Categories</Link>
+          <Link href="/admin/events" className="shrink-0">Events</Link>
+        </nav>
       </header>
-      <main className="p-8">{children}</main>
+      <main className="p-4 sm:p-8">{children}</main>
     </div>
   )
 }

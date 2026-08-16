@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import PatternDivider from "@/components/pattern-divider";
+import EventFlipCard from "@/components/event-flip-card";
 
 export default async function EventsPage() {
   const supabase = await createClient();
@@ -40,6 +40,9 @@ export default async function EventsPage() {
           <div className="text-xs tracking-[0.22em] uppercase text-terracotta font-medium mb-4">
             Under the Shade
           </div>
+          <div dir="rtl" className="font-arabic text-terracotta text-lg mb-1">
+          تحت الظل
+          </div>
           <img
             src="/logo/neema_logo_white.svg"
             alt="Neema Cafe"
@@ -65,39 +68,9 @@ export default async function EventsPage() {
             </div>
           )}
 
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {upcoming?.map((event) => (
-              <div key={event.id} className="bg-cream-deep rounded-md p-6 flex gap-5 items-start">
-                {event.image_url && (
-                  <div className="relative w-44 h-44 shrink-0 rounded-md overflow-hidden">
-                    <Image src={event.image_url} alt={event.title} fill className="object-cover" />
-                  </div>
-                )}
-                <div className="flex-1" style={{ maxWidth: "36rem" }}>
-                  <div className="text-terracotta text-sm font-medium mb-1">
-                    {new Date(event.event_date).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                    {event.event_time ? ` · ${event.event_time}` : ""}
-                  </div>
-                  {event.title_ar && (
-                    <div dir="rtl" className="font-arabic text-right text-xl text-ink mb-1">
-                      {event.title_ar}
-                    </div>
-                  )}
-                  <div className="text-ink font-medium mb-2">{event.title}</div>
-                  {event.description_ar && (
-                    <p dir="rtl" className="font-arabic text-right text-ink/65 text-sm mb-1">
-                      {event.description_ar}
-                    </p>
-                  )}
-                  {event.description && (
-                    <p className="text-ink/50 text-sm">{event.description}</p>
-                  )}
-                </div>
-              </div>
+              <EventFlipCard key={event.id} event={event} />
             ))}
           </div>
         </div>

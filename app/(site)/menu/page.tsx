@@ -45,6 +45,9 @@ export default async function MenuPage() {
           <div className="text-xs tracking-[0.22em] uppercase text-terracotta font-medium mb-4">
             What Grows Here
           </div>
+          <div dir="rtl" className="font-arabic text-terracotta text-lg mb-1">
+          ما ينمو هنا 
+          </div>
           <img
             src="/logo/neema_logo_white.svg"
             alt="Neema Cafe"
@@ -62,9 +65,12 @@ export default async function MenuPage() {
               <a
                 key={group.category.id}
                 href={`#category-${group.category.id}`}
-                className="rounded-full py-5 text-center font-display text-lg tracking-wide transition-colors bg-green-deep/90 text-gold/80 hover:bg-green-deep hover:text-gold"
+                className="rounded-full py-5 text-center font-display tracking-wide transition-colors bg-green-deep/90 text-gold/80 hover:bg-green-deep hover:text-gold"
               >
-                {group.category.name}
+                {group.category.name_ar && (
+                  <span dir="rtl" className="font-arabic text-lg block">{group.category.name_ar}</span>
+                )}
+                <span className="text-xs uppercase tracking-[0.15em] block mt-0.5 opacity-70">{group.category.name}</span>
               </a>
             ))}
           </div>
@@ -76,6 +82,7 @@ export default async function MenuPage() {
       {grouped.length === 0 && uncategorized.length === 0 && (
         <div className="bg-cream-deep py-24 px-6 text-center">
           <p className="text-ink/50">No items on the menu yet — check back soon.</p>
+          <p dir="rtl" className="font-arabic text-ink/60 text-lg mb-1">لا توجد أصناف في القائمة حتى الآن - يرجى مراجعة الموقع لاحقًا.</p>
         </div>
       )}
 
